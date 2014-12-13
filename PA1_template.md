@@ -24,7 +24,7 @@ data <- read.csv("activity.csv")
 
 ## What is mean total number of steps taken per day?
 
-Sum steps by day, create Histogram, and calculate mean and median.
+Ignore missing values in dataset and Sum steps by day, create Histogram of the total number of steps taken each day.
 
 
 ```r
@@ -33,6 +33,8 @@ hist(steps_by_day$steps, main = paste("Total Steps Each Day"), col="blue", xlab=
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
+Calculate mean and median of the total number of steps taken per day.
 
 
 ```r
@@ -43,10 +45,10 @@ rmedian <- median(steps_by_day$steps)
 The mean is 1.0766 × 104 and the median is 10765.
 
 ## What is the average daily activity pattern?
-
+Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
 - Calculate average steps for each interval for all days.
 - Plot the Average Number Steps per Day by Interval.
-- Find interval with most average steps.
+
 
 
 ```r
@@ -57,21 +59,23 @@ plot(steps_by_interval$interval,steps_by_interval$steps, type="l", xlab="Interva
 
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
+Find interval with most average steps.
+
 
 ```r
 max_interval <- steps_by_interval[which.max(steps_by_interval$steps),1]
 ```
 
-The 5-minute interval, on average across all the days in the data set, containing the maximum number of steps is 835.
+The 5-minute interval, on average across all the days in the dataset, containing the maximum number of steps is 835.
 
 ## Imputing missing values
 
-Missing data needed to be imputed. Only a simple imputation approach was required for this assignment. Missing values were imputed by inserting the average for each interval. Thus, if interval 10 was missing on 10-02-2012, the average for that interval for all days (0.1320755), replaced the NA.
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data. In this case, missing data needed to be imputed by inserting the mean for each 5-minute interval. Thus, if interval 10 was missing on 10-02-2012, the average for that interval for all days (0.1320755) is used to replace the NA.
 
 
 ```r
-incomplete <- sum(!complete.cases(data))
-imputed_data <- transform(data, steps = ifelse(is.na(data$steps), steps_by_interval$steps[match(data$interval, steps_by_interval$interval)], data$steps))
+incomplete <- sum(!complete.cases(data)) # Calculate total number of missing values in the dataset (i.e. the total number of rows with NAs)
+imputed_data <- transform(data, steps = ifelse(is.na(data$steps), steps_by_interval$steps[match(data$interval, steps_by_interval$interval)], data$steps)) # Create a new dataset that is equal to the original dataset
 ```
 
 Zeroes were imputed for 10-01-2012 because it was the first day and would have been over 9,000 steps higher than the following day, which had only 126 steps. NAs then were assumed to be zeros to fit the rising trend of the data.
@@ -118,21 +122,24 @@ total_diff <- sum(steps_by_day_i$steps) - sum(steps_by_day$steps)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-Created a plot to compare and contrast number of steps between the week and weekend. There is a higher peak earlier on weekdays, and more overall activity on weekends.
+Created a plot to compare and contrast number of steps between the week and weekend. 
 
 
 ```r
 weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", 
               "Friday")
-imputed_data$dow = as.factor(ifelse(is.element(weekdays(as.Date(imputed_data$date)),weekdays), "Weekday", "Weekend"))
+imputed_data$dow = as.factor(ifelse(is.element(weekdays(as.Date(imputed_data$date)),weekdays), "Weekday", "Weekend")) # Create a new factor variable 'dow'in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
 steps_by_interval_i <- aggregate(steps ~ interval + dow, imputed_data, mean)
 
 library(lattice)
 
+# Make a panel plot containing a time series plot (i.e. type = "l")
+# of the 5-minute interval (x-axis) and the average number of steps taken, 
+# averaged across all weekday days or weekend days (y-axis).
 xyplot(steps_by_interval_i$steps ~ steps_by_interval_i$interval|steps_by_interval_i$dow, main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",layout=c(1,2), type="l")
 ```
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
 
-
+There is a higher peak earlier on weekdays, and more overall activity on weekends.
