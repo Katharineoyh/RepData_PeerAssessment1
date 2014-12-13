@@ -140,6 +140,9 @@ To submit the assignment:
 1. Commit your completed `PA1_template.Rmd` file to the `master` branch of your git repository (you should already be on the `master` branch unless you created new ones)
 
 2. Commit your `PA1_template.md` and `PA1_template.html` files produced by processing your R markdown file with the `knit2html()` function in R (from the **knitr** package)
+- install.packages("knitr") # install the required package
+- setwd("C:/Users/Katharine/Documents/GitHub/RepData_PeerAssessment1") # make sure the Rmd file is in your working dir
+- knit2html("PA1_template.Rmd") # run this function to produce the md and html files
 
 3. If your document has figures included (it should) then they should have been placed in the `figure/` directory by default (unless you overrode the default). Add and commit the `figure/` directory to your git repository.
 
